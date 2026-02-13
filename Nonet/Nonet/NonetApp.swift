@@ -11,7 +11,7 @@ import SwiftUI
 struct NonetApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            ContentView()
         }
     }
 }
