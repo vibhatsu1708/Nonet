@@ -27,19 +27,7 @@ struct NumberPadView: View {
                 }
                 
                 Button(action: {
-                    // Erase? Or just use Undo?
-                    // Typically 'Erase' clears the cell.
-                    // Let's implement erased via '0' or a specific button if needed.
-                    // For now, let's stick to Undo and Notes.
-                    // Maybe 'Erase' is useful.
-                    if let selected = engine.selectedCell {
-                        // We need an erase function in engine, but for now 
-                        // let's just use it to clear notes or values if we add that API.
-                        // Given strict validation, erasing a filled cell (which is correct) is rare/disabled?
-                        // If it's wrong (red), maybe we want to clear it?
-                        // The prompt says "mark that number red".
-                        // Usually you want to clear the wrong number.
-                    }
+                    engine.erase()
                 }) {
                     VStack {
                         Image(systemName: "eraser")

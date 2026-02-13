@@ -120,6 +120,20 @@ class GameEngine: ObservableObject {
         }
     }
     
+    func erase() {
+        guard let (row, col) = selectedCell,
+              gameState == .active,
+              !grid[row][col].isGiven else { return }
+        
+        pushUndoState()
+        
+        grid[row][col].value = nil
+        grid[row][col].isError = false
+        grid[row][col].notes = []
+        
+        saveGame()
+    }
+    
     func undo() {
         guard let previousState = undoStack.popLast() else { return }
         grid = previousState
