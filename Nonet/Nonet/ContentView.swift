@@ -8,6 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var hasSavedGame: Bool = false
+    @State private var navigateToResume: Bool = false
+    
+    // We need a dummy engine to check persistence or use a static method?
+    // GameEngine.hasSavedGame() is an instance method. 
+    // Let's make it static or just create a temp logical check.
+    // Ideally GameEngine handles it.
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
@@ -21,6 +29,28 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
                 
                 Spacer()
+                
+                // Resume Button
+                if hasSavedGame {
+                    NavigationLink(destination: GameView(isResuming: true), isActive: $navigateToResume) {
+                        Button(action: {
+                            navigateToResume = true
+                        }) {
+                            Text("Resume Game")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.green)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal, 40)
+                    
+                    Text("or start new")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 
                 // New Game Menu
                 VStack(spacing: 15) {
@@ -50,7 +80,15 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 30)
             }
+            .onAppear {
+                checkSavedGame()
+            }
         }
         .navigationViewStyle(.stack)
+    }
+    
+    private func checkSavedGame() {
+        // Quick check without full engine load
+        hasSavedGame = UserDefaults.standard.data(forKey: "SavedGameData") != nil
     }
 }

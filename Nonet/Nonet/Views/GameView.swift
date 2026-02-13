@@ -9,9 +9,16 @@ import SwiftUI
 
 struct GameView: View {
     let difficulty: Difficulty
+    let isResuming: Bool
+    
+    init(difficulty: Difficulty = .medium, isResuming: Bool = false) {
+        self.difficulty = difficulty
+        self.isResuming = isResuming
+    }
     @StateObject private var engine = GameEngine()
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         ZStack {
@@ -59,11 +66,12 @@ struct GameView: View {
             }
         }
         .onAppear {
-            // Only start new game if not already active or if difficulty changed
-            // Actually, since StateObject is tied to View lifecycle in NavigationStack used in ContentView,
-            // it effectively resets when a new GameView is pushed.
-            // But let's be safe.
-            if engine.grid.isEmpty {
+            if isResuming {
+                if !engine.loadGame() {
+                    // Fallback if load fails
+                    engine.startNewGame(difficulty: difficulty)
+                }
+            } else if engine.grid.isEmpty {
                  engine.startNewGame(difficulty: difficulty)
             } else {
                  engine.resumeGame()
@@ -71,6 +79,11 @@ struct GameView: View {
         }
         .onDisappear {
             engine.pauseGame()
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .background || newPhase == .inactive {
+                engine.saveGame()
+            }
         }
     }
     

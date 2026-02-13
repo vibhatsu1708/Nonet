@@ -31,12 +31,14 @@ struct SudokuGridView: View {
                                             let row = (boxRow * 3) + rowOffset
                                             let col = (boxCol * 3) + colOffset
                                             
+                                            let cell = engine.grid.indices.contains(row) ? engine.grid[row][col] : SudokuCell(row: row, col: col, value: nil, isGiven: false)
+                                            
                                             CellView(
-                                                cell: engine.grid.indices.contains(row) ? engine.grid[row][col] : SudokuCell(row: row, col: col, value: nil, isGiven: false),
+                                                cell: cell,
                                                 size: cellSize,
                                                 isSelected: isSelected(row: row, col: col),
                                                 isRelated: isRelated(row: row, col: col),
-                                                isHighlighted: isHighlighted(value: engine.grid[row][col].value)
+                                                isHighlighted: isHighlighted(value: cell.value)
                                             )
                                             .onTapGesture {
                                                 engine.selectCell(row: row, col: col)

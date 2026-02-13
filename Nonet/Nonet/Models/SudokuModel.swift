@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Represents a single cell on the Sudoku board
-struct SudokuCell: Identifiable, Equatable, Hashable {
+struct SudokuCell: Identifiable, Equatable, Hashable, Codable {
     let id = UUID()
     var row: Int
     var col: Int
@@ -59,7 +59,7 @@ enum Difficulty: String, CaseIterable, Codable {
 }
 
 /// Represents the current state of the game
-enum GameState {
+enum GameState: String, Codable {
     case active
     case paused
     case won

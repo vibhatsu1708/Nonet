@@ -25,10 +25,16 @@ class GameEngine: ObservableObject {
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
     
+    private let saveKey = "SavedGameData"
+    
     // MARK: - Initialization
     
     init() {
-        startNewGame(difficulty: .medium)
+        // We don't auto-start new game here anymore, 
+        // View will trigger start or resume.
+        // But for safe default:
+        // startNewGame(difficulty: .medium) 
+        // Actually, let's leave it blank or default, view handles it.
     }
     
     func startNewGame(difficulty: Difficulty) {
@@ -53,6 +59,8 @@ class GameEngine: ObservableObject {
         self.undoStack.removeAll()
         self.scoreManager.startGame()
         self.startTimer()
+        
+        saveGame() // Initial save
     }
     
     // MARK: - Game Logic
@@ -67,7 +75,6 @@ class GameEngine: ObservableObject {
               gameState == .active,
               !grid[row][col].isGiven else { return }
         
-        // Push state to undo stack before mutation
         pushUndoState()
         
         if isNotesMode {
@@ -75,26 +82,21 @@ class GameEngine: ObservableObject {
         } else {
             enterNumber(number, at: row, col: col)
         }
+        
+        saveGame() // Save on every move
     }
     
     private func enterNumber(_ number: Int, at row: Int, col: Int) {
-        // Correct implementation per prompt:
-        // "if correct do nothing (just set it), if wrong, give haptic, mark red."
-        // Actually, prompt says: "if correct do nothing, if wrong, give a haptic validation, and mark that number red."
-        // BUT also says "when ... correct, perform an animation".
-        // Also scoring depends on correctness.
-        
         let correctValue = solvedGrid[row][col]
         var isCorrect = (number == correctValue)
         
         if isCorrect {
             grid[row][col].value = number
             grid[row][col].isError = false
-            grid[row][col].notes = [] // Clear notes on correct entry
+            grid[row][col].notes = [] 
             
             scoreManager.recordCorrectMove(difficulty: difficulty)
             
-            // Check for completion
             checkForCompletion()
         } else {
             grid[row][col].value = number
@@ -121,6 +123,7 @@ class GameEngine: ObservableObject {
     func undo() {
         guard let previousState = undoStack.popLast() else { return }
         grid = previousState
+        saveGame()
     }
     
     private func pushUndoState() {
@@ -134,6 +137,8 @@ class GameEngine: ObservableObject {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             guard let self = self, self.gameState == .active else { return }
             self.timerSeconds += 1
+            // Saving on every second is too expensive. 
+            // We save on moves, pause, and backgrounding.
         }
     }
     
@@ -146,6 +151,7 @@ class GameEngine: ObservableObject {
         if gameState == .active {
             gameState = .paused
             stopTimer()
+            saveGame()
         }
     }
     
@@ -153,24 +159,80 @@ class GameEngine: ObservableObject {
         if gameState == .paused {
             gameState = .active
             startTimer()
+            scoreManager.resetTimer() // Reset urgency timer so they don't lose points for being away
         }
     }
     
     // MARK: - End Game Logic
     
     private func checkForCompletion() {
-        // Check if full grid is filled correctly
         let isComplete = grid.joined().allSatisfy { $0.value == solvedGrid[$0.row][$0.col] }
         
         if isComplete {
             gameState = .won
             stopTimer()
-            scoreManager.applyPerfectGameBonus() // Assuming perfect game logic handled in ScoreManager
+            scoreManager.applyPerfectGameBonus()
+            clearSavedGame()
         }
     }
     
     private func gameOver() {
         gameState = .lost
         stopTimer()
+        clearSavedGame()
+    }
+    
+    // MARK: - Persistence
+    
+    struct GameStateData: Codable {
+        let grid: [[SudokuCell]]
+        let solvedGrid: [[Int]]
+        let difficulty: Difficulty
+        let gameState: GameState
+        let lives: Int
+        let timerSeconds: Int
+        let scoreState: ScoreManager.ScoreState
+    }
+    
+    func saveGame() {
+        let data = GameStateData(
+            grid: grid,
+            solvedGrid: solvedGrid,
+            difficulty: difficulty,
+            gameState: gameState,
+            lives: lives,
+            timerSeconds: timerSeconds,
+            scoreState: scoreManager.saveState()
+        )
+        
+        if let encoded = try? JSONEncoder().encode(data) {
+            UserDefaults.standard.set(encoded, forKey: saveKey)
+        }
+    }
+    
+    func loadGame() -> Bool {
+        guard let data = UserDefaults.standard.data(forKey: saveKey),
+              let decoded = try? JSONDecoder().decode(GameStateData.self, from: data) else {
+            return false
+        }
+        
+        self.grid = decoded.grid
+        self.solvedGrid = decoded.solvedGrid
+        self.difficulty = decoded.difficulty
+        self.gameState = decoded.gameState == .active ? .paused : decoded.gameState // Auto-pause validation
+        self.lives = decoded.lives
+        self.timerSeconds = decoded.timerSeconds
+        
+        self.scoreManager.loadState(decoded.scoreState)
+        
+        return true
+    }
+    
+    func hasSavedGame() -> Bool {
+        return UserDefaults.standard.data(forKey: saveKey) != nil
+    }
+    
+    func clearSavedGame() {
+        UserDefaults.standard.removeObject(forKey: saveKey)
     }
 }

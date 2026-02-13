@@ -111,4 +111,45 @@ class ScoreManager: ObservableObject {
     func resetTimer() {
         lastMoveTime = Date()
     }
+    
+    // MARK: - Persistence
+    
+    struct ScoreState: Codable {
+        let score: Int
+        let mistakeCount: Int
+        let consecutiveCorrect: Int
+        let isLockedOut: Bool
+        let lockoutTimeRemaining: TimeInterval
+        let lastMoveTime: Date
+    }
+    
+    func saveState() -> ScoreState {
+        return ScoreState(
+            score: score,
+            mistakeCount: mistakeCount,
+            consecutiveCorrect: consecutiveCorrect,
+            isLockedOut: isLockedOut,
+            lockoutTimeRemaining: lockoutTimeRemaining,
+            lastMoveTime: lastMoveTime
+        )
+    }
+    
+    func loadState(_ state: ScoreState) {
+        self.score = state.score
+        self.mistakeCount = state.mistakeCount
+        self.consecutiveCorrect = state.consecutiveCorrect
+        self.isLockedOut = state.isLockedOut
+        self.lockoutTimeRemaining = state.lockoutTimeRemaining
+        self.lastMoveTime = state.lastMoveTime // Or Date() if we want to reset move timer urgency? 
+                                               // User wants "resume", so resuming urgency is valid, 
+                                               // but if they left for days, the next move shouldn't validly be fast?
+                                               // Actually for "points based on time since last move", 
+                                               // we probably want to reset `lastMoveTime` to NOW on resume
+                                               // so they get a fair shot at the next move.
+        self.lastMoveTime = Date() 
+        
+        if isLockedOut {
+            triggerLockout()
+        }
+    }
 }
