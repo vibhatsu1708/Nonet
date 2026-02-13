@@ -2,7 +2,7 @@
 //  HighScoreView.swift
 //  Nonet
 //
-//  Created by NonetAI on 14/02/26.
+//  Created by Vedant Mistry on 14/02/26.
 //
 
 import SwiftUI
