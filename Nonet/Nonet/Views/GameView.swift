@@ -67,7 +67,9 @@ struct GameView: View {
         }
         .onAppear {
             if isResuming {
-                if !engine.loadGame() {
+                if engine.loadGame() {
+                    engine.resumeGame()
+                } else {
                     // Fallback if load fails
                     engine.startNewGame(difficulty: difficulty)
                 }
