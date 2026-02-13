@@ -84,6 +84,8 @@ struct NumberPadView: View {
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(10)
                     }
+                    .opacity(engine.isNumberCompleted(num) ? 0 : 1)
+                    .disabled(engine.isNumberCompleted(num))
                 }
             }
             .padding(.horizontal)

@@ -249,4 +249,8 @@ class GameEngine: ObservableObject {
     func clearSavedGame() {
         UserDefaults.standard.removeObject(forKey: saveKey)
     }
+    func isNumberCompleted(_ number: Int) -> Bool {
+        let count = grid.joined().filter { $0.value == number && !$0.isError }.count
+        return count == 9
+    }
 }
