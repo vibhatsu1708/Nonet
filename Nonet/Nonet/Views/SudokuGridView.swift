@@ -86,11 +86,8 @@ struct CellView: View {
     
     var body: some View {
         ZStack {
-            #if os(iOS)
-            Color(uiColor: backgroundColor)
-            #else
-            Color.white
-            #endif
+            Color(backgroundColor)
+            
             
             if let value = cell.value {
                 Text("\(value)")

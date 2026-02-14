@@ -36,9 +36,7 @@ enum Difficulty: String, CaseIterable, Codable {
         case .easy: return 1.0
         case .medium: return 1.5
         case .hard: return 2.0
-        case .expert: return 5.0 // As per user request: Expert (5x) seems logically higher than Extreme (3x) in their prompt, or maybe they meant Extreme is hardest?
-                                 // User Prompt: "Easy (1x), Medium (1.5x), Hard (2x), Extreme (3x), Expert (5x)."
-                                 // Usually Extreme is harder than Expert, but I will follow the multiplier order.
+        case .expert: return 5.0
         case .extreme: return 3.0
         }
     }
