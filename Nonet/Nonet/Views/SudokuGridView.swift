@@ -10,50 +10,56 @@ import SwiftUI
 struct SudokuGridView: View {
     @ObservedObject var engine: GameEngine
     
-    // Grid sizing
-    private let spacing: CGFloat = 2
-    private let blockSize: CGFloat = 4
+    private let spacing: CGFloat = 4
+    private let blockSize: CGFloat = 0
     
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = geometry.size.width
-            let cellSize = (availableWidth - (spacing * 6) - (blockSize * 2)) / 9
+            let gridSize = availableWidth
+            let cellSize = (gridSize - (spacing * 8) - (20)) / 9
             
-            VStack(spacing: blockSize) {
-                ForEach(0..<3, id: \.self) { boxRow in
-                    HStack(spacing: blockSize) {
-                        ForEach(0..<3, id: \.self) { boxCol in
-                            // 3x3 Box
-                            VStack(spacing: spacing) {
-                                ForEach(0..<3, id: \.self) { rowOffset in
-                                    HStack(spacing: spacing) {
-                                        ForEach(0..<3, id: \.self) { colOffset in
-                                            let row = (boxRow * 3) + rowOffset
-                                            let col = (boxCol * 3) + colOffset
-                                            
-                                            let cell = engine.grid.indices.contains(row) ? engine.grid[row][col] : SudokuCell(row: row, col: col, value: nil, isGiven: false)
-                                            
-                                            CellView(
-                                                cell: cell,
-                                                size: cellSize,
-                                                isSelected: isSelected(row: row, col: col),
-                                                isRelated: isRelated(row: row, col: col),
-                                                isHighlighted: isHighlighted(value: cell.value)
-                                            )
-                                            .onTapGesture {
-                                                engine.selectCell(row: row, col: col)
-                                            }
-                                        }
-                                    }
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(UIColor.secondarySystemBackground))
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                
+                VStack(spacing: spacing) {
+                    ForEach(0..<9, id: \.self) { row in
+                        HStack(spacing: spacing) {
+                            ForEach(0..<9, id: \.self) { col in
+                                let cell = engine.grid.indices.contains(row) ? engine.grid[row][col] : SudokuCell(row: row, col: col, value: nil, isGiven: false)
+                                
+                                CellView(
+                                    cell: cell,
+                                    isSelected: isSelected(row: row, col: col),
+                                    isRelated: isRelated(row: row, col: col),
+                                    isHighlighted: isHighlighted(value: cell.value),
+                                    isError: cell.isError
+                                )
+                                .aspectRatio(1, contentMode: .fit) // Force square aspect ratio
+                                .onTapGesture {
+                                    engine.selectCell(row: row, col: col)
                                 }
+                                // Add thicker borders for 3x3 blocks visually
+                                .overlay(
+                                    // Right border for cols 2 and 5
+                                    (col == 2 || col == 5) ? 
+                                    AnyView(Rectangle().frame(width: 1).foregroundColor(.gray).padding(.trailing, -spacing/2).offset(x: spacing/2)) : AnyView(EmptyView()),
+                                    alignment: .trailing
+                                )
+                                .overlay(
+                                    // Bottom border for rows 2 and 5
+                                    (row == 2 || row == 5) ? 
+                                    AnyView(Rectangle().frame(height: 1).foregroundColor(.gray).padding(.bottom, -spacing/2).offset(y: spacing/2)) : AnyView(EmptyView()),
+                                    alignment: .bottom
+                                )
                             }
                         }
                     }
                 }
+                .padding(10)
             }
-            .padding(blockSize)
-            .background(Color.black) // Border color
-            .border(Color.black, width: 2)
         }
         .aspectRatio(1, contentMode: .fit)
     }
@@ -79,28 +85,32 @@ struct SudokuGridView: View {
 
 struct CellView: View {
     let cell: SudokuCell
-    let size: CGFloat
     let isSelected: Bool
     let isRelated: Bool
     let isHighlighted: Bool
+    let isError: Bool
     
     var body: some View {
         ZStack {
-            Color(backgroundColor)
-            
+            RoundedRectangle(cornerRadius: 6)
+                .fill(backgroundColor)
             
             if let value = cell.value {
                 Text("\(value)")
-                    .font(.system(size: size * 0.6, weight: cell.isGiven ? .bold : .light))
+                    .font(.system(.title, design: .rounded))
+                    .fontWeight(cell.isGiven ? .heavy : .medium)
                     .foregroundColor(textColor)
+                    .scaleEffect(isSelected ? 1.1 : 1.0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
             } else if !cell.notes.isEmpty {
                 GeometryReader { geo in
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 3), spacing: 0) {
                         ForEach(1...9, id: \.self) { num in
                             if cell.notes.contains(num) {
                                 Text("\(num)")
-                                    .font(.system(size: size * 0.25))
-                                    .foregroundColor(.gray)
+                                    .font(.system(size: geo.size.width * 0.25, design: .monospaced))
+                                    .foregroundColor(.secondary)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                             } else {
                                 Color.clear
                             }
@@ -110,24 +120,24 @@ struct CellView: View {
                 .padding(2)
             }
         }
-        .frame(width: size, height: size)
     }
     
-    var backgroundColor: UIColor {
-        if cell.isError { return .red.withAlphaComponent(0.3) }
-        if isSelected { return .systemBlue.withAlphaComponent(0.3) }
-        if isHighlighted { return .systemBlue.withAlphaComponent(0.2) } // Same number highlighted
-        if isRelated { return .systemGray5 }
-        return .systemBackground
+    var backgroundColor: Color {
+        if isError { return Color.red.opacity(0.2) }
+        if isSelected { return Color.blue.opacity(0.3) }
+        if isHighlighted { return Color.yellow.opacity(0.3) }
+        if isRelated { return Color.blue.opacity(0.05) }
+        return Color(UIColor.systemBackground)
     }
     
     var textColor: Color {
-        if cell.isError { return .red }
-        if cell.isGiven { return .black }
+        if isError { return .red }
+        if cell.isGiven { return .primary }
         return .blue
     }
 }
 
 #Preview {
     SudokuGridView(engine: GameEngine())
+        .padding()
 }
