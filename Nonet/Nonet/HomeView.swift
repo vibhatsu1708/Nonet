@@ -87,6 +87,10 @@ struct HomeView: View {
                             }
                             .padding(.top, 20)
                             .padding(.bottom, 40)
+                            
+                            NativeAdCard()
+                                .padding(.horizontal)
+                                .padding(.bottom, 20)
                         }
                     }
                 }

@@ -21,6 +21,8 @@ class GameEngine: ObservableObject {
     
     @Published var scoreManager = ScoreManager()
     
+    let moveMadeSubject = PassthroughSubject<Void, Never>()
+    
     private var undoStack: [[[SudokuCell]]] = []
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
@@ -96,6 +98,7 @@ class GameEngine: ObservableObject {
             grid[row][col].notes = [] 
             
             scoreManager.recordCorrectMove(difficulty: difficulty)
+            moveMadeSubject.send()
             
             checkForCompletion()
         } else {
@@ -104,7 +107,9 @@ class GameEngine: ObservableObject {
             
             Haptics.error()
             lives -= 1
+            lives -= 1
             scoreManager.recordMistake()
+            moveMadeSubject.send()
             
             if lives <= 0 {
                 gameOver()

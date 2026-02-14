@@ -88,6 +88,9 @@ struct GameView: View {
                 engine.saveGame()
             }
         }
+        .onReceive(engine.moveMadeSubject) { _ in
+            AdsManager.shared.checkAndShowTimedAd()
+        }
     }
     
     var gameOverOverlay: some View {
@@ -129,6 +132,9 @@ struct GameView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.nonetBeige.opacity(0.1), lineWidth: 1)
         )
+        .onAppear {
+            AdsManager.shared.showGameOverInterstitial()
+        }
     }
     
     var winOverlay: some View {
@@ -164,6 +170,7 @@ struct GameView: View {
         )
         .onAppear {
             Haptics.success()
+            AdsManager.shared.showGameOverInterstitial()
         }
     }
     
