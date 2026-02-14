@@ -18,45 +18,49 @@ struct StatusHeaderView: View {
     
     
     var body: some View {
-        HStack {
-            // Difficulty
-            Text(engine.difficulty.rawValue)
+        VStack(spacing: 6) {
+            HStack {
+                Text(engine.difficulty.rawValue)
+                    .font(.headline)
+                    .foregroundColor(.nonetPrimaryTextColor)
+                
+                Spacer()
+                
+                // Timer
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                    Text(timeString(time: engine.timerSeconds))
+                        .monospacedDigit()
+                }
                 .font(.headline)
-                .foregroundColor(.gray)
-            
-            Spacer()
-            
-            // Timer
-            HStack(spacing: 4) {
-                Image(systemName: "clock")
-                Text(timeString(time: engine.timerSeconds))
-                    .monospacedDigit()
+                .foregroundColor(.nonetPrimaryTextColor)
             }
-            .font(.headline)
+            .padding()
+            .background(Color.nonetContainer)
+            .cornerRadius(15)
+            .padding(.horizontal)
             
-            Spacer()
-            
-            // Score
-            VStack {
-                Text("Score")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+            HStack {
                 Text("\(scoreManager.score)")
                     .font(.title3)
                     .bold()
-            }
-            
-            Spacer()
-            
-            // Lives
-            HStack(spacing: 2) {
-                ForEach(0..<3) { i in
-                    Image(systemName: i < engine.lives ? "heart.fill" : "heart")
-                        .foregroundColor(.red)
+                    .foregroundColor(.nonetPrimaryTextColor)
+                
+                Spacer()
+                
+                HStack(spacing: 2) {
+                    ForEach(0..<3) { i in
+                        Image(systemName: i < engine.lives ? "heart.fill" : "heart")
+                            .foregroundColor(.nonetHeartFillColor)
+                    }
                 }
             }
+            .padding()
+            .background(Color.nonetContainer)
+            .cornerRadius(15)
+            .padding(.horizontal)
+
         }
-        .padding()
     }
     
     // Convert seconds to MM:SS
@@ -68,5 +72,8 @@ struct StatusHeaderView: View {
 }
 
 #Preview {
-    StatusHeaderView(engine: GameEngine())
+    ZStack {
+        Color.nonetBackground.ignoresSafeArea()
+        StatusHeaderView(engine: GameEngine())
+    }
 }

@@ -14,28 +14,12 @@ struct NumberPadView: View {
         VStack(spacing: 20) {
             // Controls Row
             HStack(spacing: 30) {
-                Button(action: {
+                ControlIcon(icon: "arrow.uturn.backward", label: "Undo") {
                     engine.undo()
-                }) {
-                    VStack {
-                        Image(systemName: "arrow.uturn.backward")
-                            .font(.title2)
-                        Text("Undo")
-                            .font(.caption)
-                    }
-                    .foregroundColor(.primary)
                 }
                 
-                Button(action: {
+                ControlIcon(icon: "eraser", label: "Erase") {
                     engine.erase()
-                }) {
-                    VStack {
-                        Image(systemName: "eraser")
-                            .font(.title2)
-                        Text("Erase")
-                            .font(.caption)
-                    }
-                    .foregroundColor(.primary)
                 }
                 
                 Button(action: {
@@ -47,42 +31,39 @@ struct NumberPadView: View {
                             .symbolVariant(engine.isNotesMode ? .fill : .none)
                             .overlay(
                                 Circle()
-                                    .stroke(Color.blue, lineWidth: engine.isNotesMode ? 2 : 0)
+                                    .stroke(Color.nonetErrorCellBgColor, lineWidth: engine.isNotesMode ? 2 : 0)
                                     .scaleEffect(1.5)
                             )
                         Text("Notes")
                             .font(.caption)
                     }
-                    .foregroundColor(engine.isNotesMode ? .blue : .primary)
+                    .foregroundColor(engine.isNotesMode ? .nonetErrorCellBgColor : .nonetBeige)
                 }
                 
-                // Hint - "Hint Cost vs Logic Reward"
-                Button(action: {
+                ControlIcon(icon: "lightbulb", label: "Hint") {
                     // TODO: Implement Hint Logic
-                    // For now just placement
-                }) {
-                    VStack {
-                        Image(systemName: "lightbulb")
-                            .font(.title2)
-                        Text("Hint")
-                            .font(.caption)
-                    }
-                    .foregroundColor(.primary)
                 }
             }
+            .padding(.bottom, 10)
             
             // Numbers 1-9
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 9), spacing: 10) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 9), spacing: 8) {
                 ForEach(1...9, id: \.self) { num in
                     Button(action: {
                         engine.setNumber(num)
                     }) {
                         Text("\(num)")
-                            .font(.title)
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .foregroundColor(.nonetBeige)
                             .frame(maxWidth: .infinity)
                             .aspectRatio(1, contentMode: .fit)
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(10)
+                            .background(Color.nonetContainer)
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.nonetBeige.opacity(0.2), lineWidth: 1)
+                            )
                     }
                     .opacity(engine.isNumberCompleted(num) ? 0 : 1)
                     .disabled(engine.isNumberCompleted(num))
@@ -93,6 +74,27 @@ struct NumberPadView: View {
     }
 }
 
+fileprivate struct ControlIcon: View {
+    let icon: String
+    let label: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                Image(systemName: icon)
+                    .font(.title2)
+                Text(label)
+                    .font(.caption)
+            }
+            .foregroundColor(.nonetBeige)
+        }
+    }
+}
+
 #Preview {
-    NumberPadView(engine: GameEngine())
+    ZStack {
+        Color.nonetBackground.ignoresSafeArea()
+        NumberPadView(engine: GameEngine())
+    }
 }

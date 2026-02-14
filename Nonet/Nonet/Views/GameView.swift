@@ -20,20 +20,20 @@ struct GameView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.scenePhase) var scenePhase
     
+    // Flat Background
+    private let bgColor = Color.nonetBackground
+    
     var body: some View {
         ZStack {
-            Color(UIColor.systemBackground)
+            bgColor
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                // Header
                 StatusHeaderView(engine: engine)
                 
-                // Grid
                 SudokuGridView(engine: engine)
                     .padding(.horizontal)
                 
-                // Controls
                 NumberPadView(engine: engine)
                 
                 Spacer()
@@ -62,6 +62,7 @@ struct GameView: View {
                         Image(systemName: "chevron.left")
                         Text("Back")
                     }
+                    .foregroundColor(.nonetBeige)
                 }
             }
         }
@@ -94,19 +95,21 @@ struct GameView: View {
             Text("Game Over")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(.red)
+                .foregroundColor(.nonetErrorCellBgColor)
             
             Text("Out of lives!")
                 .font(.title2)
+                .foregroundColor(.nonetBeige)
             
             Text("Final Score: \(engine.scoreManager.score)")
                 .font(.headline)
+                .foregroundColor(.nonetTaupe)
             
             Button("Main Menu") {
                 presentationMode.wrappedValue.dismiss()
             }
             .padding()
-            .background(Color.blue)
+            .background(Color.nonetErrorCellBgColor)
             .foregroundColor(.white)
             .cornerRadius(10)
             
@@ -114,14 +117,18 @@ struct GameView: View {
                 engine.startNewGame(difficulty: difficulty)
             }
             .padding()
-            .background(Color.green)
-            .foregroundColor(.white)
+            .background(Color.nonetDarkBrown)
+            .foregroundColor(.nonetBeige)
             .cornerRadius(10)
         }
         .padding(40)
-        .background(Color(UIColor.systemBackground).opacity(0.9))
+        .background(Color.nonetBackground) // Solid color, no opacity or gradient
         .cornerRadius(20)
         .shadow(radius: 10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.nonetBeige.opacity(0.1), lineWidth: 1)
+        )
     }
     
     var winOverlay: some View {
@@ -129,26 +136,32 @@ struct GameView: View {
             Text("Solved!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(.green)
+                .foregroundColor(.nonetBeige)
             
             Text("Difficulty: \(difficulty.rawValue)")
+                .foregroundColor(.nonetBeige.opacity(0.8))
             
             Text("Final Score: \(engine.scoreManager.score)")
                 .font(.headline)
+                .foregroundColor(.nonetTaupe)
              
             Button("Main Menu") {
                 saveHighScore()
                 presentationMode.wrappedValue.dismiss()
             }
             .padding()
-            .background(Color.blue)
+            .background(Color.nonetErrorCellBgColor)
             .foregroundColor(.white)
             .cornerRadius(10)
         }
         .padding(40)
-        .background(Color(UIColor.systemBackground).opacity(0.9))
+        .background(Color.nonetBackground)
         .cornerRadius(20)
         .shadow(radius: 10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.nonetBeige.opacity(0.1), lineWidth: 1)
+        )
         .onAppear {
             Haptics.success()
         }
