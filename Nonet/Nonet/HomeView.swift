@@ -23,7 +23,7 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     VStack(spacing: 8) {
                         Text("NONET")
-                            .font(.custom("BlackOpsOne-Regular", size: 60))
+                            .font(.blackOps(size: 60))
                             .foregroundColor(.nonetBeige)
                     }
                     .padding(.top, 60)

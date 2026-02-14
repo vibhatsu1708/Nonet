@@ -25,28 +25,23 @@ struct NumberPadView: View {
                 Button(action: {
                     engine.isNotesMode.toggle()
                 }) {
-                    VStack {
-                        Image(systemName: "pencil")
-                            .font(.title2)
-                            .symbolVariant(engine.isNotesMode ? .fill : .none)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.nonetErrorCellBgColor, lineWidth: engine.isNotesMode ? 2 : 0)
-                                    .scaleEffect(1.5)
-                            )
-                        Text("Notes")
-                            .font(.caption)
-                    }
+                    Image(systemName: "pencil")
+                        .font(.title2)
+                        .symbolVariant(engine.isNotesMode ? .fill : .none)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.nonetErrorCellBgColor, lineWidth: engine.isNotesMode ? 2 : 0)
+                                .scaleEffect(1.5)
+                        )
                     .foregroundColor(engine.isNotesMode ? .nonetErrorCellBgColor : .nonetBeige)
                 }
                 
-                ControlIcon(icon: "lightbulb", label: "Hint") {
-                    // TODO: Implement Hint Logic
-                }
+//                ControlIcon(icon: "lightbulb", label: "Hint") {
+//                    // TODO: Implement Hint Logic
+//                }
             }
             .padding(.bottom, 10)
             
-            // Numbers 1-9
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 9), spacing: 8) {
                 ForEach(1...9, id: \.self) { num in
                     Button(action: {
@@ -58,7 +53,7 @@ struct NumberPadView: View {
                             .foregroundColor(.nonetBeige)
                             .frame(maxWidth: .infinity)
                             .aspectRatio(1, contentMode: .fit)
-                            .background(Color.nonetContainer)
+                            .background(Color.nonetGridViewBgColor)
                             .cornerRadius(8)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
@@ -81,13 +76,9 @@ fileprivate struct ControlIcon: View {
     
     var body: some View {
         Button(action: action) {
-            VStack {
-                Image(systemName: icon)
-                    .font(.title2)
-                Text(label)
-                    .font(.caption)
-            }
-            .foregroundColor(.nonetBeige)
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(.nonetBeige)
         }
     }
 }

@@ -17,6 +17,8 @@ extension Color {
     static let nonetPrimaryTextColor = Color(hex: "231f20")
     static let nonetHeartFillColor = Color(hex: "c52233")
     static let nonetSeparatorColor = Color(hex: "432818")
+    static let nonetGridViewBgColor = Color(hex: "432818").opacity(0.1)
+    static let nonetGridViewSeparatorColor = Color(hex: "432818")
     static let nonetRed = Color(hex: "bf4342")
     static let nonetBeige = Color(hex: "220901")
     static let nonetTaupe = Color(hex: "a78a7f")

@@ -19,12 +19,11 @@ struct SudokuGridView: View {
             ZStack {
                 // Glassmorphic background
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.nonetContainer)
+                    .fill(Color.nonetGridViewBgColor)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.nonetBeige.opacity(0.1), lineWidth: 1)
+                            .stroke(Color.nonetGridViewSeparatorColor, lineWidth: 1)
                     )
-                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
                 
                 VStack(spacing: spacing) {
                     ForEach(0..<9, id: \.self) { row in
@@ -47,13 +46,13 @@ struct SudokuGridView: View {
                                 .overlay(
                                     // Right border for cols 2 and 5
                                     (col == 2 || col == 5) ? 
-                                    AnyView(Rectangle().frame(width: 2).foregroundColor(Color.nonetTaupe.opacity(0.5)).padding(.trailing, -spacing/2).offset(x: spacing/2)) : AnyView(EmptyView()),
+                                    AnyView(Rectangle().frame(width: 2).foregroundColor(Color.nonetGridViewSeparatorColor).padding(.trailing, -spacing/2).offset(x: spacing/2)) : AnyView(EmptyView()),
                                     alignment: .trailing
                                 )
                                 .overlay(
                                     // Bottom border for rows 2 and 5
                                     (row == 2 || row == 5) ? 
-                                    AnyView(Rectangle().frame(height: 2).foregroundColor(Color.nonetTaupe.opacity(0.5)).padding(.bottom, -spacing/2).offset(y: spacing/2)) : AnyView(EmptyView()),
+                                    AnyView(Rectangle().frame(height: 2).foregroundColor(Color.nonetGridViewSeparatorColor).padding(.bottom, -spacing/2).offset(y: spacing/2)) : AnyView(EmptyView()),
                                     alignment: .bottom
                                 )
                             }
@@ -133,7 +132,7 @@ struct CellView: View {
         // Related = Very subtle beige
         if isRelated { return Color.nonetBeige.opacity(0.05) }
         // Default = Transparent/Dark
-        return Color.nonetContainer.opacity(0.2)
+        return Color.nonetGridViewBgColor
     }
     
     var textColor: Color {
