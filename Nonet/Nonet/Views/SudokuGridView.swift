@@ -127,3 +127,7 @@ struct CellView: View {
         return .blue
     }
 }
+
+#Preview {
+    SudokuGridView(engine: GameEngine())
+}

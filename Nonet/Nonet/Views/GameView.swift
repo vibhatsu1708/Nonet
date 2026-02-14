@@ -162,3 +162,7 @@ struct GameView: View {
         }
     }
 }
+
+#Preview {
+    GameView()
+}

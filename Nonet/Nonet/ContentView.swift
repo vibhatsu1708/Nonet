@@ -92,3 +92,7 @@ struct ContentView: View {
         hasSavedGame = UserDefaults.standard.data(forKey: "SavedGameData") != nil
     }
 }
+
+#Preview {
+    ContentView()
+}

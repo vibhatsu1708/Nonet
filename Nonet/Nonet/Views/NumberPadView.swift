@@ -92,3 +92,7 @@ struct NumberPadView: View {
         }
     }
 }
+
+#Preview {
+    NumberPadView(engine: GameEngine())
+}

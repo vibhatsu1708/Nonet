@@ -36,3 +36,9 @@ struct HighScoreView: View {
         }
     }
 }
+
+#Preview {
+    NavigationView {
+        HighScoreView()
+    }
+}
