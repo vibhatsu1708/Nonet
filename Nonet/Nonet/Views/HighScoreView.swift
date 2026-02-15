@@ -18,6 +18,10 @@ struct HighScoreView: View {
             bgColor.ignoresSafeArea()
             
             VStack {
+                Text("High Scores")
+                    .font(.blackOps(size: 30))
+                    .foregroundColor(.nonetBeige)
+                
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
                         ForEach(Difficulty.allCases, id: \.self) { diff in
@@ -28,8 +32,6 @@ struct HighScoreView: View {
                 }
             }
         }
-        .navigationTitle("High Scores")
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             loadHighScores()
         }
@@ -47,17 +49,6 @@ fileprivate struct HighScoreRow: View {
     let difficulty: Difficulty
     let score: Int
     
-    var colorForDifficulty: Color {
-        // Aligned with palette where possible
-        switch difficulty {
-        case .easy: return .nonetBeige
-        case .medium: return .nonetTaupe
-        case .hard: return .nonetErrorCellBgColor
-        case .expert: return .nonetDarkRed
-        case .extreme: return .black
-        }
-    }
-    
     var iconForDifficulty: String {
         switch difficulty {
         case .easy: return "leaf.fill"
@@ -72,9 +63,9 @@ fileprivate struct HighScoreRow: View {
         HStack {
             Image(systemName: iconForDifficulty)
                 .font(.title2)
-                .foregroundColor(colorForDifficulty)
+                .foregroundColor(.nonetBeige)
                 .frame(width: 40, height: 40)
-                .background(colorForDifficulty.opacity(0.2))
+                .background(Color.nonetBeige.opacity(0.2))
                 .clipShape(Circle())
             
             Text(difficulty.rawValue)
