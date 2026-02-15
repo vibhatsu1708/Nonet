@@ -14,10 +14,7 @@ struct SudokuGridView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let availableWidth = geometry.size.width
-            
             ZStack {
-                // Glassmorphic background
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.nonetGridViewBgColor)
                     .background(
@@ -38,20 +35,17 @@ struct SudokuGridView: View {
                                     isHighlighted: isHighlighted(value: cell.value),
                                     isError: cell.isError
                                 )
-                                .aspectRatio(1, contentMode: .fit) // Force square aspect ratio
+                                .aspectRatio(1, contentMode: .fit)
                                 .onTapGesture {
                                     engine.selectCell(row: row, col: col)
                                 }
-                                // Add thicker borders for 3x3 blocks visually
                                 .overlay(
-                                    // Right border for cols 2 and 5
-                                    (col == 2 || col == 5) ? 
+                                    (col == 2 || col == 5) ?
                                     AnyView(Rectangle().frame(width: 2).foregroundColor(Color.nonetGridViewSeparatorColor).padding(.trailing, -spacing/2).offset(x: spacing/2)) : AnyView(EmptyView()),
                                     alignment: .trailing
                                 )
                                 .overlay(
-                                    // Bottom border for rows 2 and 5
-                                    (row == 2 || row == 5) ? 
+                                    (row == 2 || row == 5) ?
                                     AnyView(Rectangle().frame(height: 2).foregroundColor(Color.nonetGridViewSeparatorColor).padding(.bottom, -spacing/2).offset(y: spacing/2)) : AnyView(EmptyView()),
                                     alignment: .bottom
                                 )

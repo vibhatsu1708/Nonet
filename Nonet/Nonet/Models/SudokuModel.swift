@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Represents a single cell on the Sudoku board
 struct SudokuCell: Identifiable, Equatable, Hashable, Codable {
-    let id = UUID()
+    var id = UUID()
     var row: Int
     var col: Int
     var value: Int? // 1-9, or nil if empty

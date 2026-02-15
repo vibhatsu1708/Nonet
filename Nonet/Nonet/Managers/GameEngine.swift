@@ -90,7 +90,7 @@ class GameEngine: ObservableObject {
     
     private func enterNumber(_ number: Int, at row: Int, col: Int) {
         let correctValue = solvedGrid[row][col]
-        var isCorrect = (number == correctValue)
+        let isCorrect = (number == correctValue)
         
         if isCorrect {
             grid[row][col].value = number
@@ -107,7 +107,7 @@ class GameEngine: ObservableObject {
             
             Haptics.error()
             lives -= 1
-            lives -= 1
+
             scoreManager.recordMistake()
             moveMadeSubject.send()
             

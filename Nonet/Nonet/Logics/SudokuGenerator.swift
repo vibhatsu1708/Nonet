@@ -122,16 +122,7 @@ class SudokuGenerator {
             let col = Int.random(in: 0..<9)
             
             if grid[row][col] != 0 {
-                // Ideally we should check if the puzzle remains uniquely solvable here
-                // For MVP/Performance on mobile, we might skip full unique-solution check
-                // or implement a quick check. 
-                // A common way is to solve it, and if more than 1 solution exists, put it back.
-                
-                let backup = grid[row][col]
                 grid[row][col] = 0
-                
-                // Optional: Check uniqueness here.
-                // For now, we just remove logic.
                 count -= 1
             }
         }

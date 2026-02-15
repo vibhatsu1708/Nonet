@@ -83,7 +83,7 @@ struct GameView: View {
         .onDisappear {
             engine.pauseGame()
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background || newPhase == .inactive {
                 engine.saveGame()
             }
