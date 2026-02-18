@@ -33,13 +33,12 @@ struct HomeView: View {
                         VStack(spacing: 25) {
                             
                             if hasSavedGame {
-                                Button(action: {
-                                    navigateToResume = true
-                                }) {
-                                    ResumeGameCard()
-                                }
-                                .navigationDestination(isPresented: $navigateToResume) {
-                                    GameView(isResuming: true)
+                                NavigationLink(destination: GameView(isResuming: true), isActive: $navigateToResume) {
+                                    Button(action: {
+                                        navigateToResume = true
+                                    }) {
+                                        ResumeGameCard()
+                                    }
                                 }
                                 .padding(.horizontal)
                                 
